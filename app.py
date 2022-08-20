@@ -66,17 +66,32 @@ def get_games():
     game = db.session.query(Game).all()
     return jsonify(multiple_game_schema.dump(game))
 
-# @app.route('/game/get/<id>', methods = ["GET"])
-# def get_game(id):
-#     game = db.session.query(Games).filter(Games.id == id).first()
-#     return jsonify(game_schema.dump(game))
+@app.route('/game/get/<id>', methods = ["GET"])
+def get_game(id):
+    game = Game.query.get(id)
+    return game_schema.jsonify(game)
 
-# @app.route('/game/update/<id>', methods=["PUT"])
-#     def game_update(id):
-#         game = Games.query.get(id)
-#         name = request.json['name']
-#         rating = request.json['rating']
-#         console_used = request.json['console_used']
+@app.route('/game/update/<id>', methods=["PUT"])
+def game_update(id):
+    post_data = request.get_json()
+    title = post_data.get('title')
+    genre = post_data.get('genre')
+    console_used = post_data.get('console_used')
+    price = post_data.get('price')
+    description = post_data.get('description')
+    rating = post_data.get('rating')
+
+    game_data = db.session.query(Game).filter(Game.id == id).first()
+
+    game_data.title = title
+    game_data.genre = genre
+    game_data.console_used = console_used
+    game_data.price = price
+    game_data.description = description
+    game_data.rating = rating
+
+    db.session.commit()
+    return jsonify("The has been updated.")
 
 
 if __name__ == "__main__":
